@@ -1,9 +1,11 @@
-#ifndef LOCK_QUEUE_HPP
-#define LOCK_QUEUE_HPP
+#ifndef QUEUE_WITH_BUFFER_HPP
+#define QUEUE_WITH_BUFFER_HPP
 
 #include <atomic>
 #include <condition_variable>
+#include <cstddef>
 #include <mutex>
+#include <utility>
 
 namespace my {
 
@@ -12,33 +14,41 @@ class queue {
  private:
   std::mutex m_mutex;
   std::condition_variable m_cond_var;
-  struct Node {
-    T value;
-    Node* next;
-
-    Node() : value(T()), next(nullptr) {}
-    Node(T val) : value(val), next(nullptr) {}
-    Node(T&& val) : value(val), next(nullptr) {}
-  };
-  Node* m_head;
-  Node* m_tail;
   std::atomic<size_t> m_size;
   const size_t m_max_size;
+  T* m_buffer;
+  size_t m_head;
+  size_t m_tail;
+
+  size_t inc(size_t index) { return (index + 1) % m_max_size; }
+  size_t dec(size_t index) { return (index - 1 + m_max_size) % m_max_size; }
 
  public:
-  queue() : m_head(new Node()), m_tail(m_head), m_size(0), m_max_size(64) {}
+  queue()
+      : m_size(0),
+        m_max_size(64),
+        m_buffer(new T[m_max_size]),
+        m_head(0),
+        m_tail(0) {
+    for (size_t i = 0; i < m_max_size; i++) {
+      m_buffer[i] = T();
+    }
+  }
   queue(size_t max_size)
-      : m_head(new Node()), m_tail(m_head), m_size(0), m_max_size(max_size) {}
+      : m_size(0),
+        m_max_size(max_size),
+        m_buffer(new T[m_max_size]),
+        m_head(0),
+        m_tail(0) {
+    for (size_t i = 0; i < m_max_size; i++) {
+      m_buffer[i] = T();
+    }
+  }
   queue(queue&) = delete;
   queue(queue&&) = delete;
   queue& operator=(queue&) = delete;
   queue& operator=(queue&&) = delete;
-  ~queue() {
-    while (Node* node = m_head) {
-      m_head = m_head->next;
-      delete node;
-    }
-  }
+  ~queue() { delete[] m_buffer; }
 
   void enqueue(T& value) {
     std::unique_lock<std::mutex> lock(m_mutex);
@@ -51,8 +61,8 @@ class queue {
     if (m_size == m_max_size) {
       return;
     }
-    m_tail->next = new Node(value);
-    m_tail = m_tail->next;
+    m_buffer[m_tail] = value;
+    m_tail = inc(m_tail);
     m_size++;
   }
 
@@ -60,26 +70,18 @@ class queue {
     if (m_size == m_max_size) {
       return;
     }
-    m_tail->next = new Node(value);
-    m_tail = m_tail->next;
+    m_buffer[m_tail] = std::move(value);
+    m_tail = inc(m_tail);
     m_size++;
   }
 
-  T& front() {
-    if (!empty()) {
-      return m_head->next->value;
-    } else {
-      return m_head->value;
-    }
-  }
+  T& front() { return m_buffer[m_head]; }
 
   void pop() {
     if (empty()) {
       return;
     }
-    Node* node = m_head;
-    m_head = m_head->next;
-    delete node;
+    m_head = inc(m_head);
     m_size--;
   }
 
@@ -90,4 +92,4 @@ class queue {
 
 }  // namespace my
 
-#endif  // LOCK_QUEUE_HPP
+#endif  // QUEUE_WITH_BUFFER_HPP

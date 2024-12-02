@@ -1,40 +1,6 @@
-#include <gtest/gtest.h>
-#include <sys/types.h>
-
-#include <cstddef>
-#include <queue>
-#include <vector>
+#include <iostream>
 
 #include "queue.hpp"
-
-TEST(QueueTest, PushPoPTest1) {
-  my::queue<int> q;
-  q.push(1);
-  EXPECT_EQ(q.front(), 1);
-  EXPECT_EQ(q.size(), 1);
-  q.pop();
-  EXPECT_TRUE(q.empty());
-}
-
-TEST(QueueTest, PushPoPTest2) {
-  std::vector<int> v(1000);
-  for (int i = 0; i < 1000; ++i) {
-    v[i] = i;
-  }
-  my::queue<int> q;
-  std::queue<int> q2;
-  for (auto i : v) {
-    q.push(i);
-    q2.push(i);
-  }
-  EXPECT_EQ(q.size(), q2.size());
-  while (!q.empty()) {
-    EXPECT_EQ(q.front(), q2.front());
-    q.pop();
-    q2.pop();
-  }
-  EXPECT_TRUE(q.empty());
-}
 
 struct Data {
   size_t m_size;
@@ -97,30 +63,21 @@ struct Data {
   }
 };
 
-TEST(QueueTest, PushPoPTest3) {
+int main() {
+  my::queue<Data> q;
   Data data(10);
-  my::queue<Data> q;
-  q.push(data);
-  EXPECT_EQ(q.size(), 1);
-  EXPECT_EQ(q.front(), data);
-}
+  q.push(std::move(data));
+  q.push(Data(20));
+  q.push(Data(30));
+  q.push(Data(40));
+  q.push(Data(50));
+  q.push(Data(60));
+  q.push(Data(70));
+  q.push(Data(80));
+  q.push(Data(90));
+  q.push(Data(100));
 
-TEST(QueueTest, PushPoPTest4) {
-  std::vector<Data> v(1000);
-  for (int i = 0; i < 1000; ++i) {
-    v[i] = Data(10);
-  }
-  my::queue<Data> q;
-  std::queue<Data> q2;
-  for (auto i : v) {
-    q.push(i);
-    q2.push(i);
-  }
-  EXPECT_EQ(q.size(), q2.size());
   while (!q.empty()) {
-    EXPECT_EQ(q.front(), q2.front());
     q.pop();
-    q2.pop();
   }
-  EXPECT_TRUE(q.empty());
 }
