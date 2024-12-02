@@ -64,9 +64,9 @@ class queue {
     m_size--;
   }
 
-  size_t size() const { return m_size; }
+  size_t size() const { return m_size.load(); }
 
-  bool empty() const { return m_size == 0; }
+  bool empty() const { return m_size.load() == 0; }
 };
 
 }  // namespace my

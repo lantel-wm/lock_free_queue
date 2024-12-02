@@ -4,9 +4,11 @@
 #include <condition_variable>
 #include <mutex>
 
+#include "queue.hpp"
+
 namespace my {
 
-template <typename T, typename Container>
+template <typename T, typename Container = my::queue<T>>
 class ThreadSafeQueue {
  private:
   Container m_container;
@@ -36,13 +38,18 @@ class ThreadSafeQueue {
     m_cond_var.notify_all();
   }
 
-  T& dequeue() {
+  T dequeue() {
     std::unique_lock<std::mutex> lock(m_mutex);
-    m_cond_var.wait(lock, [this] { return m_container.size() > 0; });
+    m_cond_var.wait(lock, [this] { return !m_container.empty(); });
     T item = m_container.front();
     m_container.pop();
+    m_cond_var.notify_all();
     return item;
   }
+
+  bool empty() const { return m_container.empty(); }
+
+  size_t size() const { return m_container.size(); }
 };
 
 }  // namespace my
