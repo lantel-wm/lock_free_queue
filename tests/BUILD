@@ -1,0 +1,29 @@
+cc_test(
+    name = "test-base-queue",
+    timeout = "short",
+    srcs = ["test_base_queue.cpp"],
+    copts = [
+        "-Iexternal/gtest/googletest/include",
+        "-Iexternal/gtest/googletest",
+    ],
+    deps = [
+        "//queues:base-queue",
+        "//utils:data",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "test-thread-safe-queue",
+    timeout = "short",
+    srcs = ["test_thread_safe_queue.cpp"],
+    copts = [
+        "-Iexternal/gtest/googletest/include",
+        "-Iexternal/gtest/googletest",
+    ],
+    deps = [
+        "//queues:thread-safe-queue",
+        "//utils:data",
+        "@googletest//:gtest_main",
+    ],
+)

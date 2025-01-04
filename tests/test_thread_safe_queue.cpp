@@ -3,10 +3,10 @@
 
 #include <thread>
 
-#include "data.hpp"
 #include "gtest/gtest.h"
-#include "queue.hpp"
-#include "thread_safe_queue.hpp"
+#include "queues/base_queue.hpp"
+#include "queues/thread_safe_queue.hpp"
+#include "utils/data.hpp"
 
 template <typename T>
 class ThreadSafeQueueTest : public ::testing::Test {};

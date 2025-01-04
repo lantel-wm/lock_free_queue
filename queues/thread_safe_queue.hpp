@@ -4,7 +4,7 @@
 #include <condition_variable>
 #include <mutex>
 
-#include "queue.hpp"
+#include "queues/base_queue.hpp"
 
 namespace my {
 
