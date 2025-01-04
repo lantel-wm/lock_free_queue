@@ -1,5 +1,5 @@
-#ifndef QUEUE_HPP
-#define QUEUE_HPP
+#ifndef BASE_QUEUE_HPP
+#define BASE_QUEUE_HPP
 
 #include <atomic>
 #include <cstddef>

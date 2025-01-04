@@ -4,8 +4,8 @@
 #include <queue>
 #include <vector>
 
-#include "data.hpp"
-#include "queue.hpp"
+#include "queues/base_queue.hpp"
+#include "utils/data.hpp"
 
 TEST(QueueTest, PushPoPTest1) {
   my::queue<int> q;

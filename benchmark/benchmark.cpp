@@ -1,7 +1,8 @@
+#include <iostream>
 #include <thread>
 #include <vector>
 
-#include "thread_safe_queue.hpp"
+#include "queues/thread_safe_queue.hpp"
 
 int main() {
   const int num_threads = 4;
@@ -25,4 +26,6 @@ int main() {
   for (auto& thread : threads) {
     thread.join();
   }
+
+  std::cout << "benchmark done!" << std::endl;
 }
