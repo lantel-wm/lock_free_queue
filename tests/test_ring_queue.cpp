@@ -4,30 +4,36 @@
 #include <queue>
 #include <vector>
 
-#include "queues/base_queue.hpp"
+#include "queues/ring_queue.hpp"
 #include "utils/data.hpp"
 
-TEST(BaseBaseQueueTest, PushPoPTest1) {
-  my::BaseQueue<int> q;
+TEST(RingQueueTest, PushPoPTest1) {
+  my::RingQueue<int, 64> q;
   q.push(1);
   EXPECT_EQ(q.front(), 1);
-  EXPECT_EQ(q.size(), 1);
   q.pop();
   EXPECT_TRUE(q.empty());
 }
 
-TEST(BaseQueueTest, PushPoPTest2) {
+TEST(RingQueueTest, PushPoPTest2) {
+  my::RingQueue<int, 63> q;
+  q.push(1);
+  EXPECT_EQ(q.front(), 1);
+  q.pop();
+  EXPECT_TRUE(q.empty());
+}
+
+TEST(RingQueueTest, PushPoPTest3) {
   std::vector<int> v(1000);
   for (int i = 0; i < 1000; ++i) {
     v[i] = i;
   }
-  my::BaseQueue<int> q;
+  my::RingQueue<int, 1024> q;
   std::queue<int> q2;
   for (auto i : v) {
     q.push(i);
     q2.push(i);
   }
-  EXPECT_EQ(q.size(), q2.size());
   while (!q.empty()) {
     EXPECT_EQ(q.front(), q2.front());
     q.pop();
@@ -36,26 +42,24 @@ TEST(BaseQueueTest, PushPoPTest2) {
   EXPECT_TRUE(q.empty());
 }
 
-TEST(BaseQueueTest, PushPoPTest3) {
+TEST(RingQueueTest, PushPoPTest4) {
   Data data(10);
-  my::BaseQueue<Data> q;
+  my::RingQueue<Data> q;
   q.push(data);
-  EXPECT_EQ(q.size(), 1);
   EXPECT_EQ(q.front(), data);
 }
 
-TEST(BaseQueueTest, PushPoPTest4) {
+TEST(RingQueueTest, PushPoPTest5) {
   std::vector<Data> v(1000);
   for (int i = 0; i < 1000; ++i) {
     v[i] = Data(10);
   }
-  my::BaseQueue<Data> q;
+  my::RingQueue<Data, 1024> q;
   std::queue<Data> q2;
   for (auto i : v) {
     q.push(i);
     q2.push(i);
   }
-  EXPECT_EQ(q.size(), q2.size());
   while (!q.empty()) {
     EXPECT_EQ(q.front(), q2.front());
     q.pop();

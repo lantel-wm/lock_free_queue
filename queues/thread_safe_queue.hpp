@@ -8,7 +8,7 @@
 
 namespace my {
 
-template <typename T, typename Container = my::queue<T>>
+template <typename T, typename Container = my::BaseQueue<T>>
 class ThreadSafeQueue {
  private:
   Container m_container;

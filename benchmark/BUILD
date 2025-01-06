@@ -1,7 +1,14 @@
-cc_binary(
+cc_library(
     name = "benchmark",
-    srcs = ["benchmark.cpp"],
+    hdrs = ["benchmark.hpp"],
+)
+
+cc_binary(
+    name = "benchmark-container",
+    srcs = ["benchmark_container.cpp"],
     deps = [
-        "//queues:thread-safe-queue",
+        ":benchmark",
+        "//queues:base-queue",
+        "//queues:ring-queue",
     ],
 )

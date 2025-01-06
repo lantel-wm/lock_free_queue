@@ -18,7 +18,7 @@ using MyTypes =
 TYPED_TEST_SUITE(ThreadSafeQueueTest, MyTypes, );
 
 TYPED_TEST(ThreadSafeQueueTest, BasicTest1) {
-  my::ThreadSafeQueue<int, my::queue<int>> q(16);
+  my::ThreadSafeQueue<int, my::BaseQueue<int>> q(16);
   q.enqueue(1);
   q.enqueue(2);
   q.enqueue(3);
@@ -29,7 +29,7 @@ TYPED_TEST(ThreadSafeQueueTest, BasicTest1) {
 }
 
 TEST(ThreadSafeQueueTest, BasicTest2) {
-  my::ThreadSafeQueue<Data, my::queue<Data>> q(16);
+  my::ThreadSafeQueue<Data, my::BaseQueue<Data>> q(16);
   q.enqueue(Data(10));
   q.enqueue(Data(20));
   q.enqueue(Data(30));
@@ -41,7 +41,7 @@ TEST(ThreadSafeQueueTest, BasicTest2) {
 
 TYPED_TEST(ThreadSafeQueueTest, BasicTest3) {
   const int queue_capacity = 1024;
-  my::ThreadSafeQueue<TypeParam, my::queue<TypeParam>> q(queue_capacity);
+  my::ThreadSafeQueue<TypeParam, my::BaseQueue<TypeParam>> q(queue_capacity);
   for (int i = 0; i < queue_capacity; i++) {
     q.enqueue(TypeParam());
   }
@@ -57,7 +57,7 @@ TYPED_TEST(ThreadSafeQueueTest, MultiThreadTest1) {
   const int num_threads = 16;
   const int num_pushes_per_thread = 1024;
   std::vector<std::thread> threads;
-  my::ThreadSafeQueue<TypeParam, my::queue<TypeParam>> queue(
+  my::ThreadSafeQueue<TypeParam, my::BaseQueue<TypeParam>> queue(
       num_threads * num_pushes_per_thread + 1);
 
   for (int tid = 0; tid < num_threads; tid++) {
@@ -83,7 +83,7 @@ TYPED_TEST(ThreadSafeQueueTest, MultiThreadTest2) {
   const int num_threads = 16;
   const int num_pops_per_thread = 1024;
   std::vector<std::thread> threads;
-  my::ThreadSafeQueue<TypeParam, my::queue<TypeParam>> queue(
+  my::ThreadSafeQueue<TypeParam, my::BaseQueue<TypeParam>> queue(
       num_threads * num_pops_per_thread + 1);
 
   for (int i = 0; i < num_threads * num_pops_per_thread; i++) {
@@ -113,7 +113,7 @@ TYPED_TEST(ThreadSafeQueueTest, MultiThreadTest3) {
   const int num_pops_per_thread = 1024;
   std::vector<std::thread> push_threads;
   std::vector<std::thread> pop_threads;
-  my::ThreadSafeQueue<TypeParam, my::queue<TypeParam>> queue(
+  my::ThreadSafeQueue<TypeParam, my::BaseQueue<TypeParam>> queue(
       num_push_threads * num_pushes_per_thread + 1);
 
   for (int tid = 0; tid < num_push_threads; tid++) {

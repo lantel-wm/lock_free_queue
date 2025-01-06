@@ -7,7 +7,7 @@
 namespace my {
 
 template <typename T>
-class queue {
+class BaseQueue {
  private:
   struct Node {
     T value;
@@ -22,12 +22,12 @@ class queue {
   std::atomic<size_t> m_size;
 
  public:
-  queue() : m_head(new Node()), m_tail(m_head), m_size(0) {}
-  queue(queue&) = delete;
-  queue(queue&&) = delete;
-  queue& operator=(queue&) = delete;
-  queue& operator=(queue&&) = delete;
-  ~queue() {
+  BaseQueue() : m_head(new Node()), m_tail(m_head), m_size(0) {}
+  BaseQueue(BaseQueue&) = delete;
+  BaseQueue(BaseQueue&&) = delete;
+  BaseQueue& operator=(BaseQueue&) = delete;
+  BaseQueue& operator=(BaseQueue&&) = delete;
+  ~BaseQueue() {
     while (Node* node = m_head) {
       m_head = m_head->next;
       delete node;
