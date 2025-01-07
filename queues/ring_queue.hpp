@@ -10,11 +10,11 @@ template <typename T, size_t RingBufferSize = 64>
 class RingQueue {
  private:
   T m_ring_buffer[RingBufferSize];
-  size_t m_head{};
-  size_t m_tail{};
+  size_t m_head;
+  size_t m_tail;
 
  public:
-  RingQueue() {
+  RingQueue() : m_head(0), m_tail(0) {
     assert((RingBufferSize & (RingBufferSize - 1)) == 0);
     for (size_t i = 0; i < RingBufferSize; i++) {
       m_ring_buffer[i] = T();
@@ -25,7 +25,7 @@ class RingQueue {
   RingQueue& operator=(RingQueue&) = delete;
   RingQueue& operator=(RingQueue&&) = delete;
 
-  bool size() const noexcept {
+  size_t size() const noexcept {
     assert(m_head <= m_tail);
     return m_tail - m_head;
   }
@@ -64,7 +64,7 @@ class RingQueue {
     if (empty()) {
       return false;
     }
-    // m_ring_buffer[m_head & (RingBufferSize - 1)] = T();
+    m_ring_buffer[m_head & (RingBufferSize - 1)] = T();
     // m_ring_buffer[m_head % RingBufferSize] = T();
     ++m_head;
     return true;

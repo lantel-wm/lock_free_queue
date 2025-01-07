@@ -11,14 +11,14 @@ namespace my {
 template <typename T, typename Container = my::BaseQueue<T>>
 class ThreadSafeQueue {
  private:
-  Container m_container;
+  Container m_container{};
   std::mutex m_mutex;
   std::condition_variable m_cond_var;
-  const std::size_t m_max_size;
+  const size_t m_max_size;
 
  public:
   ThreadSafeQueue() : m_max_size(64) {}
-  ThreadSafeQueue(std::size_t max_size) : m_max_size(max_size) {}
+  ThreadSafeQueue(size_t max_size) : m_max_size(max_size) {}
   ThreadSafeQueue(const ThreadSafeQueue&) = delete;
   ThreadSafeQueue(ThreadSafeQueue&&) = delete;
   ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete;

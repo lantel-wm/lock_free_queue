@@ -37,6 +37,7 @@ cc_test(
         "-Iexternal/gtest/googletest",
     ],
     deps = [
+        "//queues:ring-queue",
         "//queues:thread-safe-queue",
         "//utils:data",
         "@googletest//:gtest_main",
