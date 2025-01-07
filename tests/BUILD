@@ -43,3 +43,18 @@ cc_test(
         "@googletest//:gtest_main",
     ],
 )
+
+cc_test(
+    name = "test-lock-free-queue",
+    timeout = "short",
+    srcs = ["test_lock_free_queue.cpp"],
+    copts = [
+        "-Iexternal/gtest/googletest/include",
+        "-Iexternal/gtest/googletest",
+    ],
+    deps = [
+        "//queues:lock-free-queue",
+        "//utils:data",
+        "@googletest//:gtest_main",
+    ],
+)

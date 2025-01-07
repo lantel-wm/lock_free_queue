@@ -15,7 +15,7 @@ class RingQueue {
 
  public:
   RingQueue() : m_head(0), m_tail(0) {
-    assert((RingBufferSize & (RingBufferSize - 1)) == 0);
+    // assert((RingBufferSize & (RingBufferSize - 1)) == 0);
     for (size_t i = 0; i < RingBufferSize; i++) {
       m_ring_buffer[i] = T();
     }
@@ -40,8 +40,8 @@ class RingQueue {
     if (full()) {
       return false;
     }
-    m_ring_buffer[m_tail & (RingBufferSize - 1)] = value;
-    // m_ring_buffer[m_tail % RingBufferSize] = value;
+    // m_ring_buffer[m_tail & (RingBufferSize - 1)] = value;
+    m_ring_buffer[m_tail % RingBufferSize] = value;
     ++m_tail;
     return true;
   }
@@ -51,21 +51,21 @@ class RingQueue {
       return false;
     }
     // compiler also do this optimization (% 2^k -> &(2^k - 1))
-    m_ring_buffer[m_tail & (RingBufferSize - 1)] = value;
-    // m_ring_buffer[m_tail % RingBufferSize] = value;
+    // m_ring_buffer[m_tail & (RingBufferSize - 1)] = value;
+    m_ring_buffer[m_tail % RingBufferSize] = value;
     ++m_tail;
     return true;
   }
 
-  T& front() { return m_ring_buffer[m_head & (RingBufferSize - 1)]; }
-  // T& front() { return m_ring_buffer[m_head % RingBufferSize]; }
+  // T& front() { return m_ring_buffer[m_head & (RingBufferSize - 1)]; }
+  T& front() { return m_ring_buffer[m_head % RingBufferSize]; }
 
   bool pop() {
     if (empty()) {
       return false;
     }
-    m_ring_buffer[m_head & (RingBufferSize - 1)] = T();
-    // m_ring_buffer[m_head % RingBufferSize] = T();
+    // m_ring_buffer[m_head & (RingBufferSize - 1)] = T();
+    m_ring_buffer[m_head % RingBufferSize] = T();
     ++m_head;
     return true;
   }

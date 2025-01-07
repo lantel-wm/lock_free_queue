@@ -40,6 +40,11 @@ int main() {
           push_item_count, pop_item_count,
           my::RingQueue<int, push_item_count>());
 
+  BenchmarkResult result_ring_queue_slow =
+      benchmark<int, my::RingQueue<int, push_item_count + 10>>(
+          push_item_count, pop_item_count,
+          my::RingQueue<int, push_item_count + 10>());
+
   BenchmarkResult result_std_queue = benchmark<int, std::queue<int>>(
       push_item_count, pop_item_count, std::queue<int>());
 
@@ -49,6 +54,10 @@ int main() {
 
   std::cout << "RingQueue: " << std::endl;
   result_ring_queue.dump();
+  std::cout << std::endl;
+
+  std::cout << "RingQueue (slow): " << std::endl;
+  result_ring_queue_slow.dump();
   std::cout << std::endl;
 
   std::cout << "std::queue: " << std::endl;

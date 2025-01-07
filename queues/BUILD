@@ -25,3 +25,12 @@ cc_library(
     ],
     deps = [":base-queue"],
 )
+
+cc_library(
+    name = "lock-free-queue",
+    hdrs = ["lock_free_queue.hpp"],
+    visibility = [
+        "//benchmark:__pkg__",
+        "//tests:__pkg__",
+    ],
+)
