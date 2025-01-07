@@ -16,7 +16,7 @@ TEST(RingQueueTest, PushPoPTest1) {
 }
 
 TEST(RingQueueTest, PushPoPTest2) {
-  my::RingQueue<int, 63> q;
+  my::RingQueue<int, 64> q;
   q.push(1);
   EXPECT_EQ(q.front(), 1);
   q.pop();

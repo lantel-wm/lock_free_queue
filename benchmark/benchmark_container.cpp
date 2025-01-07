@@ -1,10 +1,11 @@
+#include <cstddef>
 #include <queue>
 
 #include "benchmark/benchmark.hpp"
 #include "queues/base_queue.hpp"
 #include "queues/ring_queue.hpp"
 
-template <typename T, typename Queue, int Iters = 10>
+template <typename T, typename Queue, int Iters = 100>
 BenchmarkResult benchmark(const int push_item_count, const int pop_item_count,
                           Queue queue) {
   Timer timer;
@@ -25,8 +26,8 @@ BenchmarkResult benchmark(const int push_item_count, const int pop_item_count,
 }
 
 int main() {
-  const int push_item_count = 1000000;
-  const int pop_item_count = 1000000;
+  const size_t push_item_count = (1 << 20);
+  const size_t pop_item_count = (1 << 20);
 
   std::cout << "push_item_count  : " << push_item_count << std::endl;
   std::cout << "pop_item_count   : " << pop_item_count << std::endl;
