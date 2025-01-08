@@ -36,6 +36,7 @@ BenchmarkResult benchmark_spsc(const int push_item_count,
 }
 
 int main() {
+  const size_t queue_capacity = (1 << 20);
   const size_t push_item_count = (1 << 20);
   const size_t pop_item_count = (1 << 20);
 
@@ -43,7 +44,7 @@ int main() {
   std::cout << "pop_item_count   : " << pop_item_count << std::endl;
 
   BenchmarkResult lock_free_queue_result =
-      benchmark_spsc<int, my::LockFreeQueue<int, push_item_count>>(
+      benchmark_spsc<int, my::LockFreeQueue<int, queue_capacity>>(
           push_item_count, pop_item_count);
 
   std::cout << "LockFreeQueue: " << std::endl;

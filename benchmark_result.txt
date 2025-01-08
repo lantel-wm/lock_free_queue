@@ -1,5 +1,14 @@
+const size_t queue_capacity = (1 << 20);
+const size_t push_item_count = (1 << 20);
+const size_t pop_item_count = (1 << 20);
+
 push_item_count  : 1048576
 pop_item_count   : 1048576
+
+ThreadSafeQueue (Baseline): 
+push QPS: 2.39255e+06
+pop QPS: 2.39255e+06
+total QPS: 4.78511e+06
 
 LockFreeQueue (std::memory_order_seq_cst): 
 push QPS: 1.5005e+07
@@ -11,7 +20,8 @@ push QPS: 4.31516e+07
 pop QPS: 4.31516e+07
 total QPS: 8.63032e+07
 
-ThreadSafeQueue: 
-push QPS: 2.39255e+06
-pop QPS: 2.39255e+06
-total QPS: 4.78511e+06
+LockFreeQueue (use cached cursor): 
+push QPS: 4.95825e+08
+pop QPS: 4.95825e+08
+total QPS: 9.9165e+08
+

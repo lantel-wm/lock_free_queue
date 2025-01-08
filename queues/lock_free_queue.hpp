@@ -18,10 +18,15 @@ class LockFreeQueue {
       std::size_t{64};
 
   /// Loaded and stored by the push thread; loaded by the pop thread
-  alignas(hardware_destructive_interference_size) CursorType m_push_cursor;
+  alignas(hardware_destructive_interference_size) CursorType m_push_cursor{};
 
   /// Loaded and stored by the pop thread; loaded by the push thread
-  alignas(hardware_destructive_interference_size) CursorType m_pop_cursor;
+  alignas(hardware_destructive_interference_size) CursorType m_pop_cursor{};
+
+  alignas(hardware_destructive_interference_size) std::size_t
+      m_cached_push_cursor{};
+  alignas(hardware_destructive_interference_size) std::size_t
+      m_cached_pop_cursor{};
 
   // Padding to avoid false sharing with adjacent objects
   char m_padding[hardware_destructive_interference_size - sizeof(std::size_t)];
@@ -58,9 +63,11 @@ class LockFreeQueue {
 
   bool push(const T& value) {
     auto push_cursor = m_push_cursor.load(std::memory_order_relaxed);
-    auto pop_cursor = m_pop_cursor.load(std::memory_order_acquire);
-    if (full(push_cursor, pop_cursor)) {
-      return false;
+    if (full(push_cursor, m_cached_pop_cursor)) {
+      m_cached_pop_cursor = m_pop_cursor.load(std::memory_order_acquire);
+      if (full(push_cursor, m_cached_pop_cursor)) {
+        return false;
+      }
     }
     m_ring_buffer[push_cursor % RingBufferSize] = value;
     m_push_cursor.store(m_push_cursor + 1, std::memory_order_release);
@@ -68,10 +75,12 @@ class LockFreeQueue {
   }
 
   bool pop(T& value) {
-    auto push_cursor = m_push_cursor.load(std::memory_order_acquire);
     auto pop_cursor = m_pop_cursor.load(std::memory_order_relaxed);
-    if (empty(push_cursor, pop_cursor)) {
-      return false;
+    if (empty(m_cached_push_cursor, pop_cursor)) {
+      m_cached_push_cursor = m_push_cursor.load(std::memory_order_acquire);
+      if (empty(m_cached_push_cursor, pop_cursor)) {
+        return false;
+      }
     }
     value = m_ring_buffer[pop_cursor % RingBufferSize];
     m_pop_cursor.store(m_pop_cursor + 1, std::memory_order_release);
