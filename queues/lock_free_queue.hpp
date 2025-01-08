@@ -9,12 +9,30 @@ namespace my {
 template <typename T, std::size_t RingBufferSize = 64>
 class LockFreeQueue {
  private:
+  T m_ring_buffer[RingBufferSize];
+
   using CursorType = std::atomic<std::size_t>;
   static_assert(CursorType::is_always_lock_free);
 
-  T m_ring_buffer[RingBufferSize];
-  CursorType m_pop_cursor{};
-  CursorType m_push_cursor{};
+  static constexpr auto hardware_destructive_interference_size =
+      std::size_t{64};
+
+  /// Loaded and stored by the push thread; loaded by the pop thread
+  alignas(hardware_destructive_interference_size) CursorType m_push_cursor;
+
+  /// Loaded and stored by the pop thread; loaded by the push thread
+  alignas(hardware_destructive_interference_size) CursorType m_pop_cursor;
+
+  // Padding to avoid false sharing with adjacent objects
+  char m_padding[hardware_destructive_interference_size - sizeof(std::size_t)];
+
+ private:
+  bool full(std::size_t pushCursor, std::size_t popCursor) const noexcept {
+    return (pushCursor - popCursor) == RingBufferSize;
+  }
+  static bool empty(std::size_t pushCursor, std::size_t popCursor) noexcept {
+    return pushCursor == popCursor;
+  }
 
  public:
   LockFreeQueue() {
@@ -39,20 +57,24 @@ class LockFreeQueue {
   bool full() const noexcept { return size() == capacity(); }
 
   bool push(const T& value) {
-    if (full()) {
+    auto push_cursor = m_push_cursor.load(std::memory_order_relaxed);
+    auto pop_cursor = m_pop_cursor.load(std::memory_order_acquire);
+    if (full(push_cursor, pop_cursor)) {
       return false;
     }
-    m_ring_buffer[m_push_cursor % RingBufferSize] = value;
-    ++m_push_cursor;
+    m_ring_buffer[push_cursor % RingBufferSize] = value;
+    m_push_cursor.store(m_push_cursor + 1, std::memory_order_release);
     return true;
   }
 
   bool pop(T& value) {
-    if (empty()) {
+    auto push_cursor = m_push_cursor.load(std::memory_order_acquire);
+    auto pop_cursor = m_pop_cursor.load(std::memory_order_relaxed);
+    if (empty(push_cursor, pop_cursor)) {
       return false;
     }
-    value = m_ring_buffer[m_pop_cursor % RingBufferSize];
-    ++m_pop_cursor;
+    value = m_ring_buffer[pop_cursor % RingBufferSize];
+    m_pop_cursor.store(m_pop_cursor + 1, std::memory_order_release);
     return true;
   }
 };

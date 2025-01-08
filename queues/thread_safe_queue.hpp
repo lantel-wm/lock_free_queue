@@ -24,7 +24,17 @@ class ThreadSafeQueue {
   ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete;
   ThreadSafeQueue& operator=(ThreadSafeQueue&&) = delete;
 
-  void enqueue(T& value) {
+  bool push(const T& value) {
+    enqueue(value);
+    return true;
+  }
+
+  bool pop(T& value) {
+    value = dequeue();
+    return true;
+  }
+
+  void enqueue(const T& value) {
     std::unique_lock<std::mutex> lock(m_mutex);
     m_cond_var.wait(lock, [this] { return m_container.size() < m_max_size; });
     m_container.push(value);

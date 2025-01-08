@@ -5,9 +5,9 @@
 #include "queues/base_queue.hpp"
 #include "queues/ring_queue.hpp"
 
-template <typename T, typename Queue, int Iters = 100>
-BenchmarkResult benchmark(const int push_item_count, const int pop_item_count,
-                          Queue queue) {
+template <typename T, typename Queue, int Iters = 1000>
+BenchmarkResult benchmark_container(const int push_item_count,
+                                    const int pop_item_count, Queue queue) {
   Timer timer;
 
   for (int t = 0; t < Iters; t++) {
@@ -32,20 +32,16 @@ int main() {
   std::cout << "push_item_count  : " << push_item_count << std::endl;
   std::cout << "pop_item_count   : " << pop_item_count << std::endl;
 
-  BenchmarkResult result_base_queue = benchmark<int, my::BaseQueue<int>>(
-      push_item_count, pop_item_count, my::BaseQueue<int>());
+  BenchmarkResult result_base_queue =
+      benchmark_container<int, my::BaseQueue<int>>(
+          push_item_count, pop_item_count, my::BaseQueue<int>());
 
   BenchmarkResult result_ring_queue =
-      benchmark<int, my::RingQueue<int, push_item_count>>(
+      benchmark_container<int, my::RingQueue<int, push_item_count>>(
           push_item_count, pop_item_count,
           my::RingQueue<int, push_item_count>());
 
-  BenchmarkResult result_ring_queue_slow =
-      benchmark<int, my::RingQueue<int, push_item_count + 10>>(
-          push_item_count, pop_item_count,
-          my::RingQueue<int, push_item_count + 10>());
-
-  BenchmarkResult result_std_queue = benchmark<int, std::queue<int>>(
+  BenchmarkResult result_std_queue = benchmark_container<int, std::queue<int>>(
       push_item_count, pop_item_count, std::queue<int>());
 
   std::cout << "BaseQueue: " << std::endl;
@@ -54,10 +50,6 @@ int main() {
 
   std::cout << "RingQueue: " << std::endl;
   result_ring_queue.dump();
-  std::cout << std::endl;
-
-  std::cout << "RingQueue (slow): " << std::endl;
-  result_ring_queue_slow.dump();
   std::cout << std::endl;
 
   std::cout << "std::queue: " << std::endl;

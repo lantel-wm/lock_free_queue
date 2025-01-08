@@ -1,0 +1,17 @@
+push_item_count  : 1048576
+pop_item_count   : 1048576
+
+LockFreeQueue (std::memory_order_seq_cst): 
+push QPS: 1.5005e+07
+pop QPS: 1.5005e+07
+total QPS: 3.001e+07
+
+LockFreeQueue (std::memory_order_acquire, std::memory_order_realease, std::memory_order_relaxed): 
+push QPS: 4.31516e+07
+pop QPS: 4.31516e+07
+total QPS: 8.63032e+07
+
+ThreadSafeQueue: 
+push QPS: 2.39255e+06
+pop QPS: 2.39255e+06
+total QPS: 4.78511e+06
