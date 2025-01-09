@@ -1,0 +1,33 @@
+# Address Sanitizer
+build:asan --strip=never
+build:asan --copt=-fsanitize=address
+build:asan --copt=-O0
+build:asan --copt=-fno-omit-frame-pointer
+build:asan --linkopt=-fsanitize=address
+
+# Thread Sanitizer
+build:tsan --strip=never
+build:tsan --copt=-fsanitize=thread
+build:tsan --copt=-O0
+build:tsan --copt=-fno-omit-frame-pointer
+build:tsan --linkopt=-fsanitize=thread
+
+# Undefined Behavior Sanitizer
+build:ubsan --strip=never
+build:ubsan --copt=-fsanitize=undefined
+build:ubsan --copt=-O0
+build:ubsan --copt=-fno-omit-frame-pointer
+build:ubsan --linkopt=-fsanitize=undefined
+
+
+# Recommended flags
+build:debug --copt=-Wall               # Enable all compiler warnings
+build:debug --copt=-Wextra             # Enable extra warnings
+build:debug --copt=-O3                 # Disable optimizations for better debugging
+build:debug --copt=-fno-omit-frame-pointer  # Keep frame pointers for better stack traces
+build:debug --copt=-g                  # Generate debug symbols
+build:debug --strip=never               # Do not strip debug symbols
+
+# Release Build Configuration
+build:release --strip=always          # Strip symbols to reduce binary size
+build:release --copt=-O3              # Optimize for performance
